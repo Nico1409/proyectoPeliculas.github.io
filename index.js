@@ -1,19 +1,20 @@
+//declaro variables y constantes
 let titulos = "";
-let pelicula = "";
+let peliculaModal = "";
 let pagina = 1;
 const btnSiguente = document.querySelector("#btnSiguente");
 const btnAnterior = document.querySelector("#btnAnterior");
 const modal = document.querySelector("#modal");
 const cerrarModal = document.querySelector("#cerrar-modal");
 
+//Cambia de pagina sumando (boton 'Siguente')
 btnSiguente.addEventListener("click", () => {
-  if (pagina < 1000) {
-    pagina += 1;
-    peliculas();
-    window.scroll(0, 0);
-  }
+  pagina < 1000
+    ? ((pagina += 1), peliculas(), window.scroll(0, 0)) //Hago scroll up cuando cambia de pagina
+    : console.log("fallo");
 });
 
+//Cambia de pagina restando (boton 'Anterior')
 btnAnterior.addEventListener("click", () => {
   if (pagina != 1) {
     pagina -= 1;
@@ -24,26 +25,36 @@ btnAnterior.addEventListener("click", () => {
       icon: "error",
       title: "Oops...",
       text: "No hay mas paginas anteriores",
-      background: "rgb(31 41 55)",
+      background: "rgb(31 41 5)",
       color: "#fff ",
     });
   }
 });
 
+//Detecta cuando se toca afuera del modal
 cerrarModal.addEventListener("click", () => {
   hiddenModal();
 });
 
+//Funcion que abre modal individual por pelicula
 function openModal(id) {
-  pelicula = "";
+  let heartImg = "heart.png";
+  let getLocal = JSON.parse(localStorage.getItem("id"));
+  if (getLocal != null) {
+    for (const data of getLocal) {
+      if (data == id) {
+        heartImg = "heartFull.png";
+      }
+    }
+  }
+  peliculaModal = "";
   modal.classList.remove("hidden");
   axios
     .get(
       `https://api.themoviedb.org/3/movie/${id}?api_key=192e0b9821564f26f52949758ea3c473&language=es-MX`
     )
     .then((respuesta) => {
-      console.log(respuesta);
-      pelicula = `
+      peliculaModal = `
 <div class='text-white'>
  <button onClick="hiddenModal()" class="w-full flex justify-end"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
  <div class="flex flex-col lg:flex-row">
@@ -56,47 +67,53 @@ function openModal(id) {
    ${etiquetas(respuesta.data.genres)}
    </ul>
    <button onclick="favorito(${id})" class="w-10 rounded-full bg-zinc-900" >
-   <img src="./assets/heart.png" class="w-10  p-2">
+   <img id='${id}-0' src="./assets/${heartImg}" class="w-10  p-2">
    </button>
   </div>
  </div>
 </div>
 `;
-      document.getElementById("info-modal").innerHTML = pelicula;
+      document.getElementById("info-modal").innerHTML = peliculaModal;
     })
-    .catch((res) => {
-      console.log(res);
+    .catch(() => {
+      Swal.fire({
+        title: "Error en la base de datos",
+        text: "Por favor intente mas tarde",
+        icon: "warning",
+        background: "rgb(31 41 55)",
+        color: "#fff ",
+      });
     });
 }
 
+//Funcion para cerrar modal
 function hiddenModal() {
   modal.classList.add("hidden");
 }
 
+//Funcion para agregar a favoritos (con localStorage)
 function favorito(id) {
   let getLocal = localStorage.getItem("id");
-
   if (getLocal === null) {
-    let array = [id];
-    localStorage.setItem("id", JSON.stringify(array));
-    console.log(localStorage.getItem("id"));
+    let arrayIds = [id];
+    localStorage.setItem("id", JSON.stringify(arrayIds));
     Swal.fire({
       title: "Se agrego!",
       icon: "success",
       toast: true,
       background: "rgb(31 41 55)",
-      color: "#fff ",
+      color: "#fff",
       timer: 1300,
       position: "bottom-end",
       showConfirmButton: false,
     });
   } else {
-    const array = [];
+    const arrayIds = [];
     getLocal = JSON.parse(getLocal);
     for (const data of getLocal) {
       if (data == id) {
         Swal.fire({
-          title: "Esta pelicula ya esta en favoritos",
+          title: "Esta ya esta en favoritos",
           icon: "error",
           toast: true,
           timer: 1300,
@@ -107,10 +124,10 @@ function favorito(id) {
         });
         return;
       }
-      array.push(data);
+      arrayIds.push(data);
     }
-    array.push(id);
-    localStorage.setItem("id", JSON.stringify(array));
+    arrayIds.push(id);
+    localStorage.setItem("id", JSON.stringify(arrayIds));
     Swal.fire({
       title: "Se agrego!",
       icon: "success",
@@ -122,8 +139,13 @@ function favorito(id) {
       showConfirmButton: false,
     });
   }
+  heartImg = document.getElementById(`${id}-0`);
+  heartFav = document.getElementById(`${id}-1`);
+  heartImg.setAttribute("src", "./assets/heartFull.png");
+  heartFav.classList.remove("hidden");
 }
 
+//Funcion para generar etiquetas del modal
 function etiquetas(etiquetas) {
   let listado = "";
   etiquetas.forEach((data) => {
@@ -136,6 +158,7 @@ function etiquetas(etiquetas) {
   return listado;
 }
 
+//Funcion para cargar peliculas a mostrar
 function peliculas() {
   axios
     .get(
@@ -143,11 +166,22 @@ function peliculas() {
 https://api.themoviedb.org/3/movie/popular?api_key=192e0b9821564f26f52949758ea3c473&language=es-MX&page=${pagina}`
     )
     .then((respuesta) => {
-      console.log(respuesta);
+      let getLocal = JSON.parse(localStorage.getItem("id"));
       titulos = "";
       respuesta.data.results.forEach((results) => {
+        let heartFav = "hidden";
+        if (getLocal != null) {
+          for (const data of getLocal) {
+            if (data == results.id) {
+              heartFav = "";
+            }
+          }
+        }
         titulos += `
-        <div >
+        <div>
+        <div id='${results.id}-1' class="w-7 ${heartFav} rounded-full bg-zinc-900 absolute " >
+        <img src="./assets/heartFull.png" class="p-2">
+        </div>
         <button onclick="openModal(${results.id})">
         <img class="rounded-xl " src="https://image.tmdb.org/t/p/w500/${results.poster_path}">
         </button>
@@ -157,8 +191,14 @@ https://api.themoviedb.org/3/movie/popular?api_key=192e0b9821564f26f52949758ea3c
       });
       document.getElementById("contenedorPeliculas").innerHTML = titulos;
     })
-    .catch((error) => {
-      console.log(error);
+    .catch(() => {
+      Swal.fire({
+        title: "Error en la base de datos",
+        text: "Por favor intente mas tarde",
+        icon: "warning",
+        background: "rgb(31 41 55)",
+        color: "#fff ",
+      });
     });
 }
 

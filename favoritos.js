@@ -1,3 +1,5 @@
+let flag = false
+let deleteHidden ='hidden'
 function favoritos() {
   const array = [];
   let getLocal = JSON.parse(localStorage.getItem("id"));
@@ -5,7 +7,7 @@ function favoritos() {
 
   if (getLocal == null || getLocal == []) {
     titulosFav =
-      "<h1 class='text-2xl text-yellow-400 w-screen'>NO HAY PELICULAS EN FAVORITOS</h1>";
+      "<h1 class='text-xl text-yellow-400 w-screen'>Agrega peliculas a favoritos desde la pagina principal!!</h1>";
     document.getElementById("contenedorFavoritos").innerHTML = titulosFav;
     Swal.fire({
       icon: "error",
@@ -25,10 +27,10 @@ function favoritos() {
           `https://api.themoviedb.org/3/movie/${id}?api_key=192e0b9821564f26f52949758ea3c473&language=es-MX`
         )
         .then((res) => {
-          console.log(res);
           titulosFav += `
                 <div >
-                <button onclick="borrarFav(${res.data.id})">
+                <button class="flex w-full">
+                <button  onclick="borrarFav(${res.data.id})" class="${deleteHidden} btnDeleteFav absolute bg-red-600 rounded-full p-1 "><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 <img class="rounded-xl " src="https://image.tmdb.org/t/p/w500/${res.data.poster_path}">
                 </button>
                 <h3 class="text-xl text-white">${res.data.title}<h3>
@@ -38,8 +40,15 @@ function favoritos() {
         });
     });
   }
+  if(flag){
+    flag = false
+    trash()
+  } 
+
 }
 
+
+//Funcion para borrar peliculas de favoritos
 function borrarFav(id) {
   Swal.fire({
     title: "Eliminar de favoritos",
@@ -76,11 +85,40 @@ function borrarFav(id) {
             showConfirmButton: false,
         })
           favoritos();
+
         }
+
       }
     })
-    .catch((res) => {
-      console.log(res);
+    .catch(() => {
+      Swal.fire({
+        title: "Error en la base de datos",
+        text: "Por favor intente mas tarde",
+        icon: "warning",
+        background: "rgb(31 41 55)",
+        color: "#fff ",
+      })
     });
+
+}
+
+function trash() {
+btnDeleteFav = document.getElementsByClassName('btnDeleteFav')
+btnDeleteFav = [...btnDeleteFav]
+
+if(flag == 0){
+btnDeleteFav.forEach((btn)=>{
+btn.classList.remove('hidden')
+})
+flag = true
+deleteHidden= ''
+}
+else{
+  btnDeleteFav.forEach((btn)=>{
+    btn.classList.add('hidden')
+    })
+    flag = false
+    deleteHidden= 'hidden'
+}
 }
 favoritos();

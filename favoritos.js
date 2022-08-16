@@ -1,5 +1,8 @@
+//Declaro variables
 let flag = false
 let deleteHidden ='hidden'
+
+//Esta funcion carga las peliculas marcadas como favoritas
 function favoritos() {
   const array = [];
   let getLocal = JSON.parse(localStorage.getItem("id"));
@@ -102,6 +105,7 @@ function borrarFav(id) {
 
 }
 
+//funcion para ver boton para borrar peliculas
 function trash() {
 btnDeleteFav = document.getElementsByClassName('btnDeleteFav')
 btnDeleteFav = [...btnDeleteFav]

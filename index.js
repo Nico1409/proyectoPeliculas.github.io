@@ -25,7 +25,7 @@ btnAnterior.addEventListener("click", () => {
       icon: "error",
       title: "Oops...",
       text: "No hay mas paginas anteriores",
-      background: "rgb(31 41 5)",
+      background: "rgb(31 41 55)",
       color: "#fff ",
     });
   }

@@ -7,6 +7,28 @@ const btnAnterior = document.querySelector("#btnAnterior");
 const modal = document.querySelector("#modal");
 const cerrarModal = document.querySelector("#cerrar-modal");
 
+//Funcion para tomar el nombre del usuario 
+async function getName() {
+nombre =localStorage.getItem("nombre")
+if (nombre === null) {
+  const { value: nombreLocal } = await Swal.fire({
+    title: 'Cual es tu nombre??',
+    input: 'text',
+    inputPlaceholder: 'Ingresa tu nombre',
+    background: "rgb(31 41 55)",
+      color: "#fff ",
+    inputValidator: (value) => {
+        if (!value) {
+          return 'Ingresa un nombre por favor'
+        }
+      }
+  })
+  
+  if (nombreLocal) {
+    localStorage.setItem('nombre',`${nombreLocal}`)
+  }
+}
+}
 //Cambia de pagina sumando (boton 'Siguente')
 btnSiguente.addEventListener("click", () => {
   pagina < 1000
@@ -201,5 +223,5 @@ https://api.themoviedb.org/3/movie/popular?api_key=192e0b9821564f26f52949758ea3c
       });
     });
 }
-
+getName()
 peliculas();

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html class="h-full " lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BatiPagina</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body class="h-full overflow-x-hidden">
+<!--Contenedor general-->
+<div class="h-screen w-screen  flex flex-col bg-zinc-900">
+    <!--Navbar-->
+    <nav
+      class="bg-gray-800 flex flex-col sm:flex-col justify-center items-center mb-4"
+    >
+    <div class="flex flex-row items-center">
+        <img class="w-20 m-3" src="../assets/batman.png" alt="" />
+        <h1 class="text-yellow-400 ">Las peliculas mas populares del momento</h1>
+    </div>
+      <button class="text-yellow-400"> <a href="../index.html">Peliculas</a> </button>
+    </nav>
+    <!--Contenido principal-->
+    <div class="flex justify-end">
+    <button onclick="trash()" class="p-2 px-3 mr-10 bg-yellow-400 rounded-xl"><img class="w-5 h-5" src="../assets/trash.png"></button>
+    </div>
+    <div
+      id="contenedorFavoritos"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-8 mx-8 mt-3 mb-14"
+    ></div>
+
+  </div>
+
+</div>
+
+
+
+    <!--Scripts-->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../favoritos.js"></script>
+  </body>
+</html>
